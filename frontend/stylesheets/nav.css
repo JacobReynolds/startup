@@ -1,0 +1,29 @@
+#nav {
+  width: 100vw;
+  height: 100px;
+  background: blue;
+}
+#error {
+  display: none;
+}
+#error.active {
+  display: block;
+  background: red;
+}
+#error span {
+  float: right;
+  cursor: hand;
+  cursor: pointer;
+}
+#message {
+  display: none;
+}
+#message.active {
+  display: block;
+  background: green;
+}
+#message span {
+  float: right;
+  cursor: hand;
+  cursor: pointer;
+}

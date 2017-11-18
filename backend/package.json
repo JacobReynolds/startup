@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^1.24.1",
+    "serverless-offline": "^3.16.0"
+  },
+  "dependencies": {
+    "asyncawait": "^1.0.6",
+    "bcrypt-nodejs": "0.0.3",
+    "crypto": "^1.0.1",
+    "mailgun.js": "^2.0.1",
+    "mongoose": "^4.13.4",
+    "serverless": "^1.24.1",
+    "serverless-offline": "^3.16.0"
+  }
+}

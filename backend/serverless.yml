@@ -1,0 +1,79 @@
+service:                 serverless-template
+plugins:
+  - serverless-offline
+
+provider:
+  name:                  aws
+  runtime:               nodejs6.10
+  stage:                 dev
+  environment:
+    SERVICE:             pushwave-serverless # maybe self:service ?
+    NODE_ENV:            "${self:custom.stage}"
+    MONGODB_USERNAME:    "${self:custom.secrets.MONGODB_USERNAME}"
+    MONGODB_PASSWORD:    "${self:custom.secrets.MONGODB_PASSWORD}"
+    MONGODB_HOST:        "${self:custom.secrets.MONGODB_HOST}"
+    MONGODB_DATABASE:    "${self:custom.secrets.MONGODB_DATABASE}"
+    MAILGUN_API_KEY:     "${self:custom.secrets.MAILGUN_API_KEY}"
+    INTERNAL_API_KEY:    "${self:custom.secrets.INTERNAL_API_KEY}"
+
+package:
+  exclude:
+    - secrets.yml
+custom:
+  stage:                 ${opt:stage, self:provider.stage}
+  secrets:               ${file(secrets.yml):${self:custom.stage}}
+functions:
+  run:
+    handler:             handler.run
+    events:
+      - http:
+          path:          /run
+          method:        post
+  register:
+    handler:             handler.register
+    events:
+      - http:
+          path:          /register
+          method:        post
+  forgotPassword:
+    handler:             handler.forgotPassword
+    events:
+      - http:
+          path:          /profile/forgot
+          method:        post
+  resetPassword:
+    handler:             handler.resetPassword
+    events:
+      - http:
+          path:          /profile/reset
+          method:        post
+  login:
+    handler:             handler.login
+    events:
+      - http:
+          path:          /login
+          method:        post
+  confirmProfile:
+    handler:             handler.confirmProfile
+    events:
+      - http:
+          path:          /profile/confirm
+          method:        post
+  logoff:
+    handler:             handler.logoff
+    events:
+      - http:
+          path:          /logoff
+          method:        post
+  profile:
+    handler:             handler.profile
+    events:
+      - http:
+          path:          /profile
+          method:        get
+          authorizer:    authorizerFunc
+  authorizerFunc:
+    handler:             handler.authorizerFunc
+    resultTtlInSeconds:  3600
+    identitySource:      method.request.header.Authorization
+    type:                Token
