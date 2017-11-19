@@ -1,49 +1,11 @@
-const tokenHeaderValue = "ServAuth";
 const async = require('asyncawait/async');
 const await = require('asyncawait/await');
-const responses = require('./util/response.js');
+const responses = require('../util/response.js');
 const successfulResponse = responses.successfulResponse;
 const unsuccessfulResponse = responses.unsuccessfulResponse;
-const auth = require('./util/auth.js');
-const database = require('./util/database.js')
-const waitForDBConnection = database.waitForDBConnection;
-const disconnectMongoose = database.disconnectMongoose;
-const parser = require('./util/parser.js');
-const userController = require('./controllers/user.js');
-const Session = require('./models/session.js');
-module.exports.authorizerFunc = async((event, context, callback) => {
-  var token = event.authorizationToken;
-  token = token.split(tokenHeaderValue + " ");
-  if (token.length === 2 && token[1]) {
-    token = token[1];
-  } else {
-    return unsuccessfulResponse({
-      "error": "error"
-    }, callback)
-  }
-  await(waitForDBConnection());
-  Session.findOne({
-    token: token
-  }, function(err, session) {
-    if (err || !session) {
-      callback(null, auth.generatePolicy('user', 'Deny', event.methodArn));
-    } else {
-      callback(null, auth.generatePolicy('user', 'Allow', '*', session.id, session.username, token));
-    }
-    return disconnectMongoose();
-  });
-})
-
-module.exports.run = async((event, context, callback) => {
-  try {
-    await(parser.checkRequestAndParseBody(event, callback))
-  } catch (e) {
-    //Just return, all parser errors should return themselves
-    return;
-  }
-  console.log("Request received with payload:", JSON.stringify(event.body));
-  return successfulResponse("Data received", callback)
-})
+const waitForDBConnection = require('../util/database.js').waitForDBConnection;
+const parser = require('../util/parser.js');
+const userController = require('../controllers/user.js');
 
 module.exports.register = async((event, context, callback) => {
   try {
@@ -77,9 +39,25 @@ module.exports.forgotPassword = async((event, context, callback) => {
   }
 })
 
+module.exports.deleteProfile = async((event, context, callback) => {
+  try {
+    await(parser.checkRequestAndParseBody(event, callback))
+  } catch (e) {
+    //Just return, all parser errors should return themselves
+    return;
+  }
+  await(waitForDBConnection());
+  try {
+    await(userController.deleteProfile(event.requestContext.authorizer.userId));
+    return successfulResponse(null, callback)
+  } catch (e) {
+    return unsuccessfulResponse(e, callback)
+  }
+})
+
 module.exports.resetPassword = async((event, context, callback) => {
   try {
-    await(parser.checkRequestAndParseBody(event, callback, ['password','resetToken']))
+    await(parser.checkRequestAndParseBody(event, callback, ['password', 'resetToken']))
   } catch (e) {
     //Just return, all parser errors should return themselves
     return;

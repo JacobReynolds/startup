@@ -9,8 +9,8 @@ import style from './util/style.jsx'
 
 import App from './app/app.jsx'
 import Home from './home/home.jsx'
-import Register from './auth/register.jsx'
-import Login from './auth/login.jsx'
+import Register from './profile/register.jsx'
+import Login from './profile/login.jsx'
 import ConfirmProfile from './profile/confirm.jsx'
 import Profile from './profile/profile.jsx'
 import ForgotPassword from './profile/forgot.jsx';

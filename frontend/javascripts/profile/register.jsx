@@ -1,9 +1,8 @@
 import React from 'react'
 import {push} from "react-router-redux"
 import {connect} from 'react-redux';
-import {errorAction, clearErrorAction} from '../actions/util.js';
-import {registerAction} from '../actions/auth.js';
-
+import {errorAction, clearErrorAction, messageAction} from '../actions/util.js';
+import {registerAction} from '../actions/profile.js';
 @connect((store, props) => {
   return store;
 })
@@ -21,7 +20,9 @@ class Register extends React.Component {
       if (this.props.util.error) {
         this.props.dispatch(clearErrorAction());
       }
-      this.props.dispatch(registerAction(e.target.username.value, e.target.email.value, e.target.password.value));
+      this.props.dispatch(registerAction(e.target.username.value, e.target.email.value, e.target.password.value)).then((data) => {
+        this.props.dispatch(messageAction(data.value.data.message))
+      });
     }
   }
   render() {

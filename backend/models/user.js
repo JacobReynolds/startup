@@ -15,8 +15,8 @@ var userSchema = mongoose.Schema({
   confirm: String,
   reset: String
 });
-
-userSchema.methods.generateHash = function(password) {
+//Methods will be used on a return User object
+userSchema.statics.generateHash = function(password) {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 };
 
@@ -25,5 +25,11 @@ userSchema.methods.validPassword = function(password) {
   return bcrypt.compareSync(password, this.password);
 };
 
+//Statics will be present on the imported User class
+userSchema.statics.deleteProfile = function(id) {
+  return User.remove({'_id': id});
+};
+
 // create the model for user and expose it to our app
-module.exports = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema);
+module.exports = User;

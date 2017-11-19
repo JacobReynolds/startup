@@ -2,8 +2,7 @@ import React from 'react'
 import {push} from "react-router-redux"
 import {connect} from 'react-redux';
 import {errorAction, clearErrorAction} from '../actions/util.js';
-import {confirmProfileAction} from '../actions/auth.js';
-
+import {confirmProfileAction}  from '../actions/profile.js';
 @connect((store, props) => {
   return store;
 })

@@ -2,7 +2,8 @@ import React from 'react'
 import {push} from "react-router-redux"
 import {connect} from 'react-redux';
 import {messageAction, clearErrorAction} from '../actions/util.js';
-import {resetPasswordAction} from '../actions/auth.js';
+import {resetPasswordAction} from '../actions/profile.js';
+
 @connect((store, props) => {
   return store;
 })

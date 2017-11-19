@@ -2,7 +2,7 @@ import React from 'react'
 import {push} from "react-router-redux"
 import {connect} from 'react-redux';
 import {errorAction, clearErrorAction} from '../actions/util.js';
-import {registerAction, loginAction} from '../actions/auth.js';
+import {registerAction, loginAction} from '../actions/profile.js';
 import {setAuthToken} from '../util/axios.js';
 @connect((store, props) => {
   return store;
@@ -20,8 +20,8 @@ class Register extends React.Component {
     }
     this.props.dispatch(loginAction(e.target.email.value, e.target.password.value)).then((data) => {
       localStorage.setItem('authToken', data.value.data.token);
-      this.props.dispatch(push('/profile'));
       setAuthToken(data.value.data.token);
+      this.props.dispatch(push('/profile'));
     });
   }
   render() {

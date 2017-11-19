@@ -2,13 +2,13 @@ var validator = require('./validator.js');
 const unsuccessfulResponse = require('./response.js').unsuccessfulResponse;
 
 //Returns true if there are any errors
-module.exports.checkRequestAndParseBody = (event, callback) => {
+module.exports.checkRequestAndParseBody = (event, callback, requiredParams = []) => {
   return new Promise((resolve, reject) => {
     if (event && event.body && !(typeof event.body === "object")) {
       event.body = JSON.parse(event.body);
     }
     //If it returns
-    var error = validationMiddleware(event, callback);
+    var error = validationMiddleware(event, callback, requiredParams);
     if (error.then) { //Is there a promise
       error.then((err) => {
         if (err) { //Err already called the unsuccessfulResponse() so just reject
@@ -17,15 +17,17 @@ module.exports.checkRequestAndParseBody = (event, callback) => {
           resolve()
         }
       }).catch((error) => {
-        resolve()
+        reject()
       })
-    } else if (!error) {
+    } else if (error) {
+      reject();
+    } else {
       resolve()
     }
   })
 }
 
-function validationMiddleware(event, callback, requiredParams=[]) {
+function validationMiddleware(event, callback, requiredParams) {
   if (!event.queryStringParameters) {
     event.queryStringParameters = {};
   }
@@ -48,17 +50,19 @@ function validationMiddleware(event, callback, requiredParams=[]) {
         requiredParams.splice(requiredIndex, 1);
       }
       if (validation = validator[key](event.body[key])) {
-        return unsuccessfulResponse(validation, callback);
+        unsuccessfulResponse(validation, callback);
+        return true;
       }
     }
   }
   if (requiredParams.length > 0) {
-    return unsuccessfulResponse("Missing required parameters: " + requiredParams.join(','), callback);
+    unsuccessfulResponse("Missing required parameters: " + requiredParams.join(','), callback);
+    return true;
   }
   return Promise.all(promises).then(() => {
     return false;
   }).catch((error) => {
-    unsuccessfulResponse(error.error, callback);
+    return unsuccessfulResponse(error.error, callback);
     return true;
   })
 }

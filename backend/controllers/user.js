@@ -51,18 +51,18 @@ module.exports.register = async((username, email, password) => {
     if (userSearch && (userSearch.usernamei == username.toLowerCase())) {
       throw "Username already taken";
     } else if (userSearch) {
-      return "Please check your email to confirm";
+      return {message: 'Please check your email to confirm'};
     } else {
       var newUser = new User();
       newUser.username = username;
       newUser.usernamei = username.toLowerCase();
       newUser.email = email;
-      newUser.password = newUser.generateHash(password);
+      newUser.password = User.generateHash(password);
       const token = generate_key()
       newUser.confirm = token;
       sendEmail.sendEmailConfirmation(newUser.email, newUser.confirm);
       await(newUser.save());
-      return "Please check your email to confirm";
+      return {message: 'Please check your email to confirm'};
     }
   } catch (e) {
     console.log("Error:", e);
@@ -85,18 +85,27 @@ module.exports.login = async((email, password) => {
     const token = await(addToken(user));
     return {token};
   } catch (e) {
-    throw "Error logging in";
+    throw e;
+  }
+})
+
+module.exports.deleteProfile = async((id) => {
+  try {
+    await(User.deleteProfile(id));
+    return "Profile deleted successfully";
+  } catch (e) {
+    throw "Error deleting profile";
   }
 })
 
 module.exports.forgotPassword = async((email, password) => {
   try {
     const reset = generate_key();
-    const user = await(User.update({
+    const user = await(User.findOneAndUpdate({
       email
     }, {
       reset
-    }, {new: true}))
+    }))
     if (user) {
       sendEmail.sendForgotPassword(email, reset);
     }
@@ -109,13 +118,12 @@ module.exports.forgotPassword = async((email, password) => {
 module.exports.resetPassword = async((password, reset) => {
   try {
     const forgot = generate_key();
-    var temp = new User();
-    var user = await(User.update({
+    await(User.update({
       reset: reset
-    }, {password: temp.generateHash(password)}));
+    }, {password: User.generateHash(password)}));
     return;
   } catch (e) {
-    console.log("Error:",e)
+    console.log("Error:", e)
     throw "Error resetting password";
   }
 })

@@ -23,57 +23,67 @@ custom:
   stage:                 ${opt:stage, self:provider.stage}
   secrets:               ${file(secrets.yml):${self:custom.stage}}
 functions:
-  run:
-    handler:             handler.run
-    events:
-      - http:
-          path:          /run
-          method:        post
   register:
-    handler:             handler.register
+    handler:             actions/profile.register
+    description:         Register the profile
     events:
       - http:
           path:          /register
           method:        post
   forgotPassword:
-    handler:             handler.forgotPassword
+    handler:             actions/profile.forgotPassword
+    description:         Trigger the forgot password flow
     events:
       - http:
           path:          /profile/forgot
           method:        post
   resetPassword:
-    handler:             handler.resetPassword
+    handler:             actions/profile.resetPassword
+    description:         Reset the password
     events:
       - http:
           path:          /profile/reset
           method:        post
+  deleteProfile:
+    handler:             actions/profile.deleteProfile
+    description:         Delete the profile
+    events:
+      - http:
+          path:          /profile
+          method:        delete
+          authorizer:    authorizerFunc
   login:
-    handler:             handler.login
+    handler:             actions/profile.login
+    description:         Log the user in
     events:
       - http:
           path:          /login
           method:        post
   confirmProfile:
-    handler:             handler.confirmProfile
+    handler:             actions/profile.confirmProfile
+    description:         Confirm a new profile
     events:
       - http:
           path:          /profile/confirm
           method:        post
   logoff:
-    handler:             handler.logoff
+    handler:             actions/profile.logoff
+    description:         Log the user off
     events:
       - http:
           path:          /logoff
           method:        post
   profile:
-    handler:             handler.profile
+    handler:             actions/profile.profile
+    description:         Get the user's profile
     events:
       - http:
           path:          /profile
           method:        get
           authorizer:    authorizerFunc
   authorizerFunc:
-    handler:             handler.authorizerFunc
+    handler:             actions/auth.authorizerFunc
+    description:         Default authorizer function
     resultTtlInSeconds:  3600
     identitySource:      method.request.header.Authorization
     type:                Token
