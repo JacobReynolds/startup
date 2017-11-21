@@ -23,7 +23,7 @@ function confirmationLinkTemplate(token) {
 }
 
 function emailAlreadyRegisteredTemplate() {
-  return 'This email is already registered on Pushwave, you can login <a href="' + DOMAIN + '/login">here</a>!<br/><br/>~Your Pushwave Team';
+  return 'This email is already registered on this domain, you can login <a href="' + DOMAIN + '/login">here</a>!<br/><br/>Jake';
 }
 
 

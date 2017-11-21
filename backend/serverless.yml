@@ -73,6 +73,7 @@ functions:
       - http:
           path:          /logoff
           method:        post
+          authorizer:    authorizerFunc
   profile:
     handler:             actions/profile.profile
     description:         Get the user's profile

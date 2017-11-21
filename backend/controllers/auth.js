@@ -1,4 +1,4 @@
-module.exports.generatePolicy = (principalId, effect, resource, userId, username, token) => {
+module.exports.generatePolicy = (principalId, effect, resource, profileId, username, token) => {
   var authResponse = {};
 
   authResponse.principalId = principalId;
@@ -16,7 +16,7 @@ module.exports.generatePolicy = (principalId, effect, resource, userId, username
 
   // Can optionally return a context object of your choosing.
   authResponse.context = {};
-  authResponse.context.userId = userId;
+  authResponse.context.profileId = profileId;
   authResponse.context.username = username;
   authResponse.context.token = token;
   return authResponse;
